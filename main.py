@@ -20,7 +20,7 @@ class FreedomApp(QWidget):
 
         # Create board
         label = QLabel(self)
-        board_pixmap = QPixmap('image.png').scaled(800, 800)
+        board_pixmap = QPixmap('artifacts/board.png').scaled(800, 800)
         label.setPixmap(board_pixmap)
         self.resize(board_pixmap.width(), board_pixmap.height())
         self.show()
