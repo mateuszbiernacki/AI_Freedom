@@ -1,5 +1,8 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+import board
+
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton
 from PyQt5.QtGui import QPixmap
 
 
@@ -22,9 +25,17 @@ class FreedomApp(QWidget):
         label = QLabel(self)
         board_pixmap = QPixmap('artifacts/board.png').scaled(800, 800)
         label.setPixmap(board_pixmap)
-        self.resize(board_pixmap.width(), board_pixmap.height())
+        #self.resize(board_pixmap.width(), board_pixmap.height())
+
+        self.setMouseTracking(True)
+
         self.show()
 
+    def mousePressEvent(self, e):
+        x = e.x()
+        y = e.y()
+
+        print(f'x: {x},  y: {y}')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
