@@ -2,19 +2,23 @@ import sys
 import board
 
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QGraphicsItem
 from PyQt5.QtGui import QPixmap
+from board import GameBoard
 
 
 class FreedomApp(QWidget):
 
+    board = GameBoard()
+
     def __init__(self):
         super().__init__()
         self.title = 'Freedom'
-        self.left = 10
-        self.top = 10
+        self.left = 100
+        self.top = 100
         self.width = 900
         self.height = 900
+        self.help_value = 1
         self.initUI()
 
     def initUI(self):
@@ -37,6 +41,14 @@ class FreedomApp(QWidget):
         len_y = len(board.SQUARES_NAMES[0])
         if x < len_x and y < len_y:
             print(board.SQUARES_NAMES[y][x])
+            pic = QLabel(self)
+            if self.help_value == 1:
+                pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
+            else:
+                pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
+            self.help_value *= -1
+            pic.move(x*80, y*80)
+            pic.show()
 
 
 if __name__ == '__main__':

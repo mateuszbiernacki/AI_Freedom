@@ -10,3 +10,24 @@ SQUARES_NAMES = (
     ('I1', 'I2', 'I3', 'I4', 'I5', 'I6', 'I7', 'I8', 'I9', 'I10'),
     ('J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'J8', 'J9', 'J10'),
 )
+EMPTY = 0
+BLACK = 1
+WHITE = 2
+
+
+class GameBoard:
+    def __init__(self):
+        self.board = []
+        self.empty_squares = 100
+        self.history_of_moves = ''
+        for y in range(10):
+            self.board.append([])
+            for x in range(10):
+                self.board[y].append({
+                    "name": SQUARES_NAMES[y][x],
+                    "val": EMPTY
+                })
+        for i in self.board:
+            print(i)
+
+
