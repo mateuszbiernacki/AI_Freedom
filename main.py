@@ -25,17 +25,19 @@ class FreedomApp(QWidget):
         label = QLabel(self)
         board_pixmap = QPixmap('artifacts/board.png').scaled(800, 800)
         label.setPixmap(board_pixmap)
-        #self.resize(board_pixmap.width(), board_pixmap.height())
 
         self.setMouseTracking(True)
 
         self.show()
 
     def mousePressEvent(self, e):
-        x = e.x()
-        y = e.y()
+        x = int(e.x()/80)
+        y = int(e.y()/80)
+        len_x = len(board.SQUARES_NAMES)
+        len_y = len(board.SQUARES_NAMES[0])
+        if x < len_x and y < len_y:
+            print(board.SQUARES_NAMES[y][x])
 
-        print(f'x: {x},  y: {y}')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
