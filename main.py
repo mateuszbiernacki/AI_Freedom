@@ -1,8 +1,7 @@
 import sys
 import board
 
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QGraphicsItem
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 from board import GameBoard
 
