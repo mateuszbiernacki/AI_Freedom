@@ -19,6 +19,7 @@ class FreedomApp(QWidget):
         self.height = 900
         self.help_value = 1
         self.initUI()
+        self.game_board = board.GameBoard()
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -39,15 +40,17 @@ class FreedomApp(QWidget):
         len_x = len(board.SQUARES_NAMES)
         len_y = len(board.SQUARES_NAMES[0])
         if x < len_x and y < len_y:
-            print(board.SQUARES_NAMES[y][x])
-            pic = QLabel(self)
+            square = board.SQUARES_NAMES[y][x]
+            # pic = QLabel(self)
             if self.help_value == 1:
-                pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
+                # pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
+                board.put_white_pawn(square)
             else:
-                pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
+                # pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
+                board.put_black_pawn(square)
             self.help_value *= -1
-            pic.move(x*80, y*80)
-            pic.show()
+            # pic.move(x*80, y*80)
+            # pic.show()
 
 
 if __name__ == '__main__':
