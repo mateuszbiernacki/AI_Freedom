@@ -20,6 +20,8 @@ EMPTY = 0
 BLACK = 1
 WHITE = 2
 
+LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+
 
 def put_white_pawn(square_name):
     response = requests.get(f'http://127.0.0.1:5000/put/white/{square_name}')
@@ -36,15 +38,33 @@ class GameBoard:
         self.board = {}
         self.empty_squares = 100
         self.history_of_moves = ''
+        self.next_color = WHITE
+        self.possible_next_movies = []
         for y in range(10):
             for x in range(10):
                 self.board[SQUARES_NAMES[y][x]] = EMPTY
+                self.possible_next_movies.append(SQUARES_NAMES[y][x])
         # for i in self.board:
         #     print(i)
 
     def is_it_possible_move(self, color, square):
-        # TODO implement conditions
-        return True
+        # Is it this color turn?
+        if self.next_color == color:
+            # Is square empty?
+            if self.board[square] == EMPTY:
+                # Is it possible move?
+                if square in self.possible_next_movies:
+                    return True
+                else:
+                    # Is it freedom?
+                    if len(self.possible_next_movies) == 0:
+                        return True
+                    else:
+                        return False
+            else:
+                return False
+        else:
+            return False
 
 
 game_board = GameBoard()
@@ -55,22 +75,37 @@ def test():
     return 'test'
 
 
-@flask_app.route('/put/<color>/<square_name>')
-def put(color, square_name):
-    if color == 'white' and game_board.is_it_possible_move(WHITE, square_name):
-        if game_board.board[square_name] == EMPTY:
-            game_board.board[square_name] = WHITE
-            return 'OK'
-        else:
-            return 'E1'
-    elif color == 'black' and game_board.is_it_possible_move(BLACK, square_name):
-        if game_board.board[square_name] == EMPTY:
-            game_board.board[square_name] = BLACK
-            return 'OK'
-        else:
-            return 'E2'
+@flask_app.route('/put/white/<square_name>')
+def put_white(square_name):
+    return put_template(WHITE, BLACK, square_name)
+
+
+@flask_app.route('/put/black/<square_name>')
+def put_black(square_name):
+    return put_template(BLACK, WHITE, square_name)
+
+
+def put_template(color, next_color, square_name):
+    if game_board.is_it_possible_move(color, square_name):
+        game_board.board[square_name] = color
+        game_board.next_color = next_color
+        game_board.possible_next_movies = []
+        y = square_name[0]
+        y_val = -1
+        for iter_letters in range(len(LETTERS)):
+            if LETTERS[iter_letters] == y:
+                y_val = iter_letters + 1
+                break
+        x_val = int(square_name[1:])
+        for x in range(x_val - 1, x_val - 1 + 3):
+            for y in range(y_val - 1, y_val - 1 + 3):
+                print(x, y)
+                if x in range(1, 11) and y in range(1, 11):
+                    if game_board.board[SQUARES_NAMES[y-1][x-1]] == EMPTY:
+                        game_board.possible_next_movies.append(SQUARES_NAMES[y-1][x-1])
+        return 'OK'
     else:
-        return 'E3'
+        return 'E1'
 
 
 @flask_app.route('/board')

@@ -41,16 +41,19 @@ class FreedomApp(QWidget):
         len_y = len(board.SQUARES_NAMES[0])
         if x < len_x and y < len_y:
             square = board.SQUARES_NAMES[y][x]
-            # pic = QLabel(self)
+            pic = QLabel(self)
             if self.help_value == 1:
-                # pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
-                board.put_white_pawn(square)
+                if board.put_white_pawn(square) == 'OK':
+                    pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
+                    pic.move(x*80, y*80)
+                    pic.show()
+                    self.help_value *= -1
             else:
-                # pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
-                board.put_black_pawn(square)
-            self.help_value *= -1
-            # pic.move(x*80, y*80)
-            # pic.show()
+                if board.put_black_pawn(square) == 'OK':
+                    pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
+                    pic.move(x*80, y*80)
+                    pic.show()
+                    self.help_value *= -1
 
 
 if __name__ == '__main__':
