@@ -1,7 +1,7 @@
 import sys
 import board
 
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QGridLayout, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QGridLayout, QPushButton, QComboBox
 from PyQt5.QtGui import QPixmap
 from board import GameBoard
 
@@ -30,6 +30,7 @@ class FreedomApp(QWidget):
         self.help_value = 1
         self.game_mode = PREGAME
         self.check_boxes = []
+        self.bots = [QComboBox(self), QComboBox(self)]
         self.layout = QGridLayout()
         self.game_board = board.GameBoard()
         self.initUI()
@@ -46,6 +47,17 @@ class FreedomApp(QWidget):
         play_button.setText('PLAY')
         play_button.resize(250, 80)
         play_button.move(1000, 50)
+        white_bot_combo_list = QLabel(self)
+        white_bot_combo_list.setText('White bot')
+        white_bot_combo_list.adjustSize()
+        white_bot_combo_list.move(820, 160)
+        black_bot_combo_list = QLabel(self)
+        black_bot_combo_list.setText('Black bot')
+        black_bot_combo_list.adjustSize()
+        black_bot_combo_list.move(820+150, 160)
+        for i in range(2):
+            self.bots[i].move(820 + i * 150, 180)
+            self.bots[i].addItem('random_bot')
         for i in range(len(GAME_MODES)):
             self.check_boxes.append(QRadioButton(self))
             self.check_boxes[i].setText(GAME_MODES[i])
