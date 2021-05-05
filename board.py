@@ -66,6 +66,28 @@ class GameBoard:
         else:
             return False
 
+    def put_piece(self, color, next_color, square_name):
+        if self.is_it_possible_move(color, square_name):
+            self.board[square_name] = color
+            self.next_color = next_color
+            self.possible_next_movies = []
+            y = square_name[0]
+            y_val = -1
+            for iter_letters in range(len(LETTERS)):
+                if LETTERS[iter_letters] == y:
+                    y_val = iter_letters + 1
+                    break
+            x_val = int(square_name[1:])
+            for x in range(x_val - 1, x_val - 1 + 3):
+                for y in range(y_val - 1, y_val - 1 + 3):
+                    print(x, y)
+                    if x in range(1, 11) and y in range(1, 11):
+                        if self.board[SQUARES_NAMES[y - 1][x - 1]] == EMPTY:
+                            self.possible_next_movies.append(SQUARES_NAMES[y - 1][x - 1])
+            return 'OK'
+        else:
+            return 'E1'
+
 
 game_board = GameBoard()
 
@@ -77,35 +99,12 @@ def test():
 
 @flask_app.route('/put/white/<square_name>')
 def put_white(square_name):
-    return put_template(WHITE, BLACK, square_name)
+    return game_board.put_piece(WHITE, BLACK, square_name)
 
 
 @flask_app.route('/put/black/<square_name>')
 def put_black(square_name):
-    return put_template(BLACK, WHITE, square_name)
-
-
-def put_template(color, next_color, square_name):
-    if game_board.is_it_possible_move(color, square_name):
-        game_board.board[square_name] = color
-        game_board.next_color = next_color
-        game_board.possible_next_movies = []
-        y = square_name[0]
-        y_val = -1
-        for iter_letters in range(len(LETTERS)):
-            if LETTERS[iter_letters] == y:
-                y_val = iter_letters + 1
-                break
-        x_val = int(square_name[1:])
-        for x in range(x_val - 1, x_val - 1 + 3):
-            for y in range(y_val - 1, y_val - 1 + 3):
-                print(x, y)
-                if x in range(1, 11) and y in range(1, 11):
-                    if game_board.board[SQUARES_NAMES[y-1][x-1]] == EMPTY:
-                        game_board.possible_next_movies.append(SQUARES_NAMES[y-1][x-1])
-        return 'OK'
-    else:
-        return 'E1'
+    return game_board.put_piece(BLACK, WHITE, square_name)
 
 
 @flask_app.route('/board')

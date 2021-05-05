@@ -1,9 +1,19 @@
 import sys
 import board
 
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QGridLayout, QPushButton
 from PyQt5.QtGui import QPixmap
 from board import GameBoard
+
+
+# Game modes:
+PREGAME = 0
+PLAYER_VS_PLAYER = 1
+PLAYER_VS_BLACK_BOT = 2
+PLAYER_VS_WHITE_BOT = 3
+BOT_VS_BOT = 4
+
+GAME_MODES = ['PLAYER_VS_PLAYER', 'PLAYER_VS_BLACK_BOT', 'PLAYER_VS_WHITE_BOT', 'BOT_VS_BOT']
 
 
 class FreedomApp(QWidget):
@@ -15,16 +25,31 @@ class FreedomApp(QWidget):
         self.title = 'Freedom'
         self.left = 100
         self.top = 100
-        self.width = 900
-        self.height = 900
+        self.width = 1300
+        self.height = 800
         self.help_value = 1
-        self.initUI()
+        self.game_mode = PREGAME
+        self.check_boxes = []
+        self.layout = QGridLayout()
         self.game_board = board.GameBoard()
+        self.initUI()
 
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-
+        game_modes_label = QLabel(self)
+        game_modes_label.setText('Game mode:')
+        game_modes_label.adjustSize()
+        game_modes_label.move(820, 20)
+        play_button = QPushButton(self)
+        play_button.clicked.connect(self.play_button_press_action)
+        play_button.setText('PLAY')
+        play_button.resize(250, 80)
+        play_button.move(1000, 50)
+        for i in range(len(GAME_MODES)):
+            self.check_boxes.append(QRadioButton(self))
+            self.check_boxes[i].setText(GAME_MODES[i])
+            self.check_boxes[i].move(820, 50 + i * 20)
         # Create board
         label = QLabel(self)
         board_pixmap = QPixmap('artifacts/board.png').scaled(800, 800)
@@ -33,6 +58,9 @@ class FreedomApp(QWidget):
         self.setMouseTracking(True)
 
         self.show()
+
+    def play_button_press_action(self):
+        print('play button is pressing')
 
     def mousePressEvent(self, e):
         x = int(e.x()/80)
