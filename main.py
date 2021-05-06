@@ -1,3 +1,4 @@
+import subprocess
 import sys
 import board
 import bot
@@ -29,7 +30,7 @@ class FreedomApp(QWidget):
         self.height = 800
         self.help_value = 1
         self.game_mode = PREGAME
-        self.white_bot = None
+        self.white_bot = bot.RandomBot(board.WHITE)
         self.black_bot = bot.RandomBot(board.BLACK)
         self.check_boxes = []
         self.bots = [QComboBox(self), QComboBox(self)]
@@ -85,8 +86,30 @@ class FreedomApp(QWidget):
             self.game_mode = PLAYER_VS_BLACK_BOT
         elif _game_mode == 'PLAYER_VS_WHITE_BOT':
             self.game_mode = PLAYER_VS_WHITE_BOT
+            response, bot_square = self.white_bot.make_a_move()
+            bot1_pic = QLabel(self)
+            print(board.game_board.possible_next_movies)
+            if response == 'OK':
+                bot1_pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
+                bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
+                bot1_pic.show()
         elif _game_mode == 'BOT_VS_BOT':
             self.game_mode = BOT_VS_BOT
+            for i in range(50):
+                response, bot_square = self.white_bot.make_a_move()
+                bot1_pic = QLabel(self)
+                print(board.game_board.possible_next_movies)
+                if response == 'OK':
+                    bot1_pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
+                    bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
+                    bot1_pic.show()
+                response, bot_square = self.black_bot.make_a_move()
+                bot2_pic = QLabel(self)
+                print(board.game_board.possible_next_movies)
+                if response == 'OK':
+                    bot2_pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
+                    bot2_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
+                    bot2_pic.show()
 
     def mousePressEvent(self, e):
         x = int(e.x()/80)
@@ -123,11 +146,23 @@ class FreedomApp(QWidget):
                         bot1_pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
                         bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
                         bot1_pic.show()
+            elif self.game_mode == PLAYER_VS_WHITE_BOT:
+                if board.put_black_pawn(square) == 'OK':
+                    pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
+                    pic.move(x * 80, y * 80)
+                    pic.show()
+                    response, bot_square = self.black_bot.make_a_move()
+                    print(board.game_board.possible_next_movies)
+                    if response == 'OK':
+                        bot1_pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
+                        bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
+                        bot1_pic.show()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = FreedomApp()
     sys.exit(app.exec_())
+
 
 

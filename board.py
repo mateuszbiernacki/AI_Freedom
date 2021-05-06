@@ -1,6 +1,7 @@
 import requests
 import flask
 import json
+import threading
 
 
 flask_app = flask.Flask('__name__')
@@ -37,9 +38,6 @@ def put_white_pawn(square_name):
 def put_black_pawn(square_name):
     response = requests.get(f'http://127.0.0.1:5000/put/black/{square_name}')
     return response.text
-
-
-
 
 
 class GameBoard:
@@ -102,6 +100,10 @@ class GameBoard:
             return 'OK'
         else:
             return 'E1'
+
+    def reset(self):
+        for square in self.board:
+            self.board[square] = EMPTY
 
 
 game_board = GameBoard()
