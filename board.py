@@ -2,6 +2,7 @@ import requests
 import flask
 import json
 
+
 flask_app = flask.Flask('__name__')
 
 SQUARES_NAMES = (
@@ -22,6 +23,11 @@ WHITE = 2
 
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
+SQUARES_CORD = {}
+for i in range(len(SQUARES_NAMES)):
+    for j in range(len(SQUARES_NAMES[i])):
+        SQUARES_CORD[SQUARES_NAMES[i][j]] = (j, i)
+
 
 def put_white_pawn(square_name):
     response = requests.get(f'http://127.0.0.1:5000/put/white/{square_name}')
@@ -33,10 +39,14 @@ def put_black_pawn(square_name):
     return response.text
 
 
+
+
+
 class GameBoard:
     def __init__(self):
         self.board = {}
         self.empty_squares = 100
+        self.last_move = []
         self.history_of_moves = ''
         self.next_color = WHITE
         self.possible_next_movies = []
@@ -84,6 +94,11 @@ class GameBoard:
                     if x in range(1, 11) and y in range(1, 11):
                         if self.board[SQUARES_NAMES[y - 1][x - 1]] == EMPTY:
                             self.possible_next_movies.append(SQUARES_NAMES[y - 1][x - 1])
+            if color == BLACK:
+                self.last_move = (square_name, 'black')
+            elif color == WHITE:
+                self.last_move = (square_name, 'white')
+            self.history_of_moves += square_name + ' '
             return 'OK'
         else:
             return 'E1'
@@ -110,6 +125,11 @@ def put_black(square_name):
 @flask_app.route('/board')
 def get_board():
     return json.dumps(game_board.board)
+
+
+@flask_app.route('/possible_movies')
+def get_possible_movies():
+    return json.dumps(game_board.possible_next_movies)
 
 
 if __name__ == '__main__':

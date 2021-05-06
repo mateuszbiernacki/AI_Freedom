@@ -1,9 +1,11 @@
 import sys
 import board
+import bot
+import time
 
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QGridLayout, QPushButton, QComboBox
 from PyQt5.QtGui import QPixmap
-from board import GameBoard
+from board import game_board
 
 
 # Game modes:
@@ -18,8 +20,6 @@ GAME_MODES = ['PLAYER_VS_PLAYER', 'PLAYER_VS_BLACK_BOT', 'PLAYER_VS_WHITE_BOT', 
 
 class FreedomApp(QWidget):
 
-    board = GameBoard()
-
     def __init__(self):
         super().__init__()
         self.title = 'Freedom'
@@ -28,7 +28,9 @@ class FreedomApp(QWidget):
         self.width = 1300
         self.height = 800
         self.help_value = 1
-        self.game_mode = PREGAME
+        self.game_mode = PLAYER_VS_BLACK_BOT
+        self.white_bot = None
+        self.black_bot = bot.RandomBot(board.BLACK)
         self.check_boxes = []
         self.bots = [QComboBox(self), QComboBox(self)]
         self.layout = QGridLayout()
@@ -82,21 +84,36 @@ class FreedomApp(QWidget):
         if x < len_x and y < len_y:
             square = board.SQUARES_NAMES[y][x]
             pic = QLabel(self)
-            if self.help_value == 1:
+            bot1_pic = QLabel(self)
+            if self.game_mode == PLAYER_VS_PLAYER:
+                if self.help_value == 1:
+                    if board.put_white_pawn(square) == 'OK':
+                        pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
+                        pic.move(x*80, y*80)
+                        pic.show()
+                        self.help_value *= -1
+                else:
+                    if board.put_black_pawn(square) == 'OK':
+                        pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
+                        pic.move(x*80, y*80)
+                        pic.show()
+                        self.help_value *= -1
+            elif self.game_mode == PLAYER_VS_BLACK_BOT:
                 if board.put_white_pawn(square) == 'OK':
                     pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
-                    pic.move(x*80, y*80)
+                    pic.move(x * 80, y * 80)
                     pic.show()
-                    self.help_value *= -1
-            else:
-                if board.put_black_pawn(square) == 'OK':
-                    pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
-                    pic.move(x*80, y*80)
-                    pic.show()
-                    self.help_value *= -1
+                    response, bot_square = self.black_bot.make_a_move()
+                    print(board.game_board.possible_next_movies)
+                    if response == 'OK':
+                        bot1_pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
+                        bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
+                        bot1_pic.show()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = FreedomApp()
     sys.exit(app.exec_())
+
+
