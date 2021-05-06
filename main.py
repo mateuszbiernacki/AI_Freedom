@@ -28,7 +28,7 @@ class FreedomApp(QWidget):
         self.width = 1300
         self.height = 800
         self.help_value = 1
-        self.game_mode = PLAYER_VS_BLACK_BOT
+        self.game_mode = PREGAME
         self.white_bot = None
         self.black_bot = bot.RandomBot(board.BLACK)
         self.check_boxes = []
@@ -74,7 +74,19 @@ class FreedomApp(QWidget):
         self.show()
 
     def play_button_press_action(self):
-        print('play button is pressing')
+        _game_mode = ''
+        for mode in self.check_boxes:
+            if mode.isChecked():
+                _game_mode = mode.text()
+
+        if _game_mode == 'PLAYER_VS_PLAYER':
+            self.game_mode = PLAYER_VS_PLAYER
+        elif _game_mode == 'PLAYER_VS_BLACK_BOT':
+            self.game_mode = PLAYER_VS_BLACK_BOT
+        elif _game_mode == 'PLAYER_VS_WHITE_BOT':
+            self.game_mode = PLAYER_VS_WHITE_BOT
+        elif _game_mode == 'BOT_VS_BOT':
+            self.game_mode = BOT_VS_BOT
 
     def mousePressEvent(self, e):
         x = int(e.x()/80)
@@ -85,7 +97,9 @@ class FreedomApp(QWidget):
             square = board.SQUARES_NAMES[y][x]
             pic = QLabel(self)
             bot1_pic = QLabel(self)
-            if self.game_mode == PLAYER_VS_PLAYER:
+            if self.game_mode == PREGAME:
+                return
+            elif self.game_mode == PLAYER_VS_PLAYER:
                 if self.help_value == 1:
                     if board.put_white_pawn(square) == 'OK':
                         pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
