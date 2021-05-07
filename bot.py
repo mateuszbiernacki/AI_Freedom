@@ -26,7 +26,7 @@ class RandomBot(Bot):
                     possible_movies.append(square)
         random_index = random.randint(0, len(possible_movies)-1)
         move = possible_movies[random_index]
-        print(possible_movies)
+        # print(possible_movies)
         response = requests.get(f'http://127.0.0.1:5000/put/{self.color}/{move}')
         return response.text, move
 

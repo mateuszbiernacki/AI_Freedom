@@ -1,7 +1,6 @@
 import requests
 import flask
 import json
-import threading
 
 
 flask_app = flask.Flask('__name__')
@@ -37,6 +36,16 @@ def put_white_pawn(square_name):
 
 def put_black_pawn(square_name):
     response = requests.get(f'http://127.0.0.1:5000/put/black/{square_name}')
+    return response.text
+
+
+def black_points():
+    response = requests.get(f'http://127.0.0.1:5000/points/black')
+    return response.text
+
+
+def white_points():
+    response = requests.get(f'http://127.0.0.1:5000/points/white')
     return response.text
 
 
@@ -88,7 +97,7 @@ class GameBoard:
             x_val = int(square_name[1:])
             for x in range(x_val - 1, x_val - 1 + 3):
                 for y in range(y_val - 1, y_val - 1 + 3):
-                    print(x, y)
+                    # print(x, y)
                     if x in range(1, 11) and y in range(1, 11):
                         if self.board[SQUARES_NAMES[y - 1][x - 1]] == EMPTY:
                             self.possible_next_movies.append(SQUARES_NAMES[y - 1][x - 1])
@@ -100,6 +109,88 @@ class GameBoard:
             return 'OK'
         else:
             return 'E1'
+
+    def count_current_result(self, color):
+        # Every square is counted in 4 ways: across, down and crosswise two times (| -- / \)
+        points = 0
+        for square in self.board:
+            if self.board[square] == color:
+                x = -1
+                for iterator in range(10):
+                    if square[0] == LETTERS[iterator]:
+                        y = iterator
+                x = int(square[1:])-1
+                # across
+                in_one_line = 1
+                x_iter, y_iter = x+1, y  # x+1 because there is checked square in right side
+                while x_iter < 10 and y_iter < 10:
+                    # Reject when it is consecutive this color square
+                    if 0 <= x - 1 < 10 and 0 <= y < 10:
+                        if self.board[SQUARES_NAMES[y][x - 1]] == color:
+                            break
+                    if self.board[SQUARES_NAMES[y_iter][x_iter]] == color:
+                        in_one_line += 1
+                        x_iter += 1
+                    else:
+                        break
+                if in_one_line == 4:
+                    print(square, '->', SQUARES_NAMES[y_iter][x_iter-1])
+                    points += 1
+
+                # down
+                in_one_line = 1
+                x_iter, y_iter = x, y+1  # y+1 because there is checked square in down side
+                while x_iter < 10 and y_iter < 10:
+                    # Reject when it is consecutive this color square
+                    if 0 <= x < 10 and 0 <= y - 1 < 10:
+                        if self.board[SQUARES_NAMES[y-1][x]] == color:
+                            break
+                    if self.board[SQUARES_NAMES[y_iter][x_iter]] == color:
+                        in_one_line += 1
+                        y_iter += 1
+                    else:
+                        break
+                if in_one_line == 4:
+                    print(square, '->', SQUARES_NAMES[y_iter-1][x_iter])
+                    points += 1
+
+                # crosswise \
+                in_one_line = 1
+                x_iter, y_iter = x+1, y+1  # y+1 and x+1 because there is checked square in right-down side
+                while x_iter < 10 and y_iter < 10:
+                    # Reject when it is consecutive this color square
+                    if 0 <= x - 1 < 10 and 0 <= y - 1 < 10:
+                        if self.board[SQUARES_NAMES[y-1][x-1]] == color:
+                            break
+                    if self.board[SQUARES_NAMES[y_iter][x_iter]] == color:
+                        in_one_line += 1
+                        y_iter += 1
+                        x_iter += 1
+                    else:
+                        break
+                if in_one_line == 4:
+                    print(square, '->', SQUARES_NAMES[y_iter-1][x_iter-1])
+                    points += 1
+
+                # crosswise /
+                in_one_line = 1
+                x_iter, y_iter = x - 1, y + 1  # y+1 and x-1 because there is checked square in left-down side
+                while 0 <= x_iter < 10 and y_iter < 10:
+                    # Reject when it is consecutive this color square
+                    if 0 <= x + 1 < 10 and 0 <= y - 1 < 10:
+                        if self.board[SQUARES_NAMES[y - 1][x + 1]] == color:
+                            break
+                    if self.board[SQUARES_NAMES[y_iter][x_iter]] == color:
+                        in_one_line += 1
+                        y_iter += 1
+                        x_iter -= 1
+                    else:
+                        break
+                if in_one_line == 4:
+                    print(square, '->', SQUARES_NAMES[y_iter - 1][x_iter + 1])
+                    points += 1
+
+        return str(points)
 
     def reset(self):
         for square in self.board:
@@ -132,6 +223,16 @@ def get_board():
 @flask_app.route('/possible_movies')
 def get_possible_movies():
     return json.dumps(game_board.possible_next_movies)
+
+
+@flask_app.route('/points/black')
+def get_black_points():
+    return game_board.count_current_result(BLACK)
+
+
+@flask_app.route('/points/white')
+def get_white_points():
+    return game_board.count_current_result(WHITE)
 
 
 if __name__ == '__main__':
