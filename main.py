@@ -1,7 +1,8 @@
-import subprocess
+import time
 import sys
 
 import requests
+from PyQt5.QtCore import QTimer
 
 import board
 import bot
@@ -39,7 +40,15 @@ class FreedomApp(QWidget):
         self.bots = [QComboBox(self), QComboBox(self)]
         self.layout = QGridLayout()
         self.game_board = board.GameBoard()
+        self.score_label = QLabel(self)
+        self.refresh()
+        self.score_label.adjustSize()
+        self.score_label.move(820, 260)
+        self.pieces_on_board = 0
         self.initUI()
+
+    def refresh(self):
+        self.score_label.setText(f'WHITE: {board.white_points()} \t\t BLACK: {board.black_points()}')
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -113,8 +122,7 @@ class FreedomApp(QWidget):
                     bot2_pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
                     bot2_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
                     bot2_pic.show()
-            print('b: ', board.black_points())
-            print('w: ', board.white_points())
+        self.refresh()
 
     def mousePressEvent(self, e):
         x = int(e.x()/80)
@@ -162,6 +170,7 @@ class FreedomApp(QWidget):
                         bot1_pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
                         bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
                         bot1_pic.show()
+        self.refresh()
 
 
 if __name__ == '__main__':
