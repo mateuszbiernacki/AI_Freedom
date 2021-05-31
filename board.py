@@ -75,9 +75,9 @@ class GameBoard:
                         if self.board[SQUARES_NAMES[y - 1][x - 1]] == EMPTY:
                             self.possible_next_movies.append(SQUARES_NAMES[y - 1][x - 1])
             if color == BLACK:
-                self.last_move = (square_name, 'black')
+                self.last_move = [square_name, 'black']
             elif color == WHITE:
-                self.last_move = (square_name, 'white')
+                self.last_move = [square_name, 'white']
             self.history_of_moves += square_name + ' '
             return 'OK'
         else:
@@ -198,5 +198,3 @@ class GameHandler:
         return GameHandler.game_board.count_current_result(WHITE)
 
 
-if __name__ == '__main__':
-    pass

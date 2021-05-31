@@ -29,7 +29,7 @@ class FreedomApp(QWidget):
         self.help_value = 1
         self.game_mode = PREGAME
         self.white_bot = bot.RandomBot(board.WHITE)
-        self.black_bot = bot.RandomBot(board.BLACK)
+        self.black_bot = bot.MinMaxBot(board.BLACK)
         self.check_boxes = []
         self.bots = [QComboBox(self), QComboBox(self)]
         self.layout = QGridLayout()
@@ -68,6 +68,7 @@ class FreedomApp(QWidget):
         for i in range(2):
             self.bots[i].move(820 + i * 150, 180)
             self.bots[i].addItem('random_bot')
+            self.bots[i].addItem('minmax_bot')
         for i in range(len(GAME_MODES)):
             self.check_boxes.append(QRadioButton(self))
             self.check_boxes[i].setText(GAME_MODES[i])
@@ -103,14 +104,15 @@ class FreedomApp(QWidget):
         elif _game_mode == 'BOT_VS_BOT':
             self.game_mode = BOT_VS_BOT
             for i in range(50):
-                response, bot_square = self.white_bot.make_a_move()
+                print(GameHandler.get_possible_movies())
+                response, bot_square = self.white_bot.make_a_move(GameHandler.game_board)
                 bot1_pic = QLabel(self)
                 # print(board.game_board.possible_next_movies)
                 if response == 'OK':
                     bot1_pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
                     bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
                     bot1_pic.show()
-                response, bot_square = self.black_bot.make_a_move()
+                response, bot_square = self.black_bot.make_a_move(GameHandler.game_board)
                 bot2_pic = QLabel(self)
                 # print(board.game_board.possible_next_movies)
                 if response == 'OK':
@@ -148,7 +150,7 @@ class FreedomApp(QWidget):
                     pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
                     pic.move(x * 80, y * 80)
                     pic.show()
-                    response, bot_square = self.black_bot.make_a_move()
+                    response, bot_square = self.black_bot.make_a_move('dupa')
                     # print(board.game_board.possible_next_movies)
                     if response == 'OK':
                         bot1_pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
