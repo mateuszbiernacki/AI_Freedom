@@ -1,16 +1,10 @@
-import time
 import sys
-
-import requests
-from PyQt5.QtCore import QTimer
-
 import board
 import bot
-import time
 
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QGridLayout, QPushButton, QComboBox
 from PyQt5.QtGui import QPixmap
-from board import game_board
+from board import GameHandler
 
 
 # Game modes:
@@ -48,7 +42,8 @@ class FreedomApp(QWidget):
         self.initUI()
 
     def refresh(self):
-        self.score_label.setText(f'WHITE: {board.white_points()} \t\t BLACK: {board.black_points()}')
+        self.score_label.setText(f'WHITE: {GameHandler.get_white_points()} \t\t '
+                                 f'BLACK: {GameHandler.get_black_points()}')
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -137,19 +132,19 @@ class FreedomApp(QWidget):
                 return
             elif self.game_mode == PLAYER_VS_PLAYER:
                 if self.help_value == 1:
-                    if board.put_white_pawn(square) == 'OK':
+                    if GameHandler.put_white(square) == 'OK':
                         pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
                         pic.move(x*80, y*80)
                         pic.show()
                         self.help_value *= -1
                 else:
-                    if board.put_black_pawn(square) == 'OK':
+                    if GameHandler.put_black(square) == 'OK':
                         pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
                         pic.move(x*80, y*80)
                         pic.show()
                         self.help_value *= -1
             elif self.game_mode == PLAYER_VS_BLACK_BOT:
-                if board.put_white_pawn(square) == 'OK':
+                if GameHandler.put_white(square) == 'OK':
                     pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
                     pic.move(x * 80, y * 80)
                     pic.show()
@@ -160,7 +155,7 @@ class FreedomApp(QWidget):
                         bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
                         bot1_pic.show()
             elif self.game_mode == PLAYER_VS_WHITE_BOT:
-                if board.put_black_pawn(square) == 'OK':
+                if GameHandler.put_black(square) == 'OK':
                     pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
                     pic.move(x * 80, y * 80)
                     pic.show()

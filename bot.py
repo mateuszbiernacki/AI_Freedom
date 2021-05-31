@@ -1,7 +1,7 @@
-import requests
 import random
-import json
 import board
+
+from main import GameHandler
 
 
 class Bot:
@@ -18,15 +18,18 @@ class Bot:
 
 class RandomBot(Bot):
     def make_a_move(self):
-        possible_movies = json.loads(requests.get('http://127.0.0.1:5000/possible_movies').text.encode('utf-8'))
+        possible_movies = GameHandler.get_possible_movies()
         if len(possible_movies) == 0:
-            _board = json.loads(requests.get('http://127.0.0.1:5000/board').text.encode('utf-8'))
+            _board = GameHandler.get_board()
             for square in _board:
                 if _board[square] == 0:
                     possible_movies.append(square)
         random_index = random.randint(0, len(possible_movies)-1)
         move = possible_movies[random_index]
         # print(possible_movies)
-        response = requests.get(f'http://127.0.0.1:5000/put/{self.color}/{move}')
-        return response.text, move
+        if self.color == 'white':
+            GameHandler.put_white(move)
+        elif self.color == 'black':
+            GameHandler.put_black(move)
+        return 'OK', move
 

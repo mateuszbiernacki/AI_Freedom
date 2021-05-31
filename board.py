@@ -1,10 +1,3 @@
-import requests
-import flask
-import json
-
-
-flask_app = flask.Flask('__name__')
-
 SQUARES_NAMES = (
     ('A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10'),
     ('B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10'),
@@ -27,26 +20,6 @@ SQUARES_CORD = {}
 for i in range(len(SQUARES_NAMES)):
     for j in range(len(SQUARES_NAMES[i])):
         SQUARES_CORD[SQUARES_NAMES[i][j]] = (j, i)
-
-
-def put_white_pawn(square_name):
-    response = requests.get(f'http://127.0.0.1:5000/put/white/{square_name}')
-    return response.text
-
-
-def put_black_pawn(square_name):
-    response = requests.get(f'http://127.0.0.1:5000/put/black/{square_name}')
-    return response.text
-
-
-def black_points():
-    response = requests.get(f'http://127.0.0.1:5000/points/black')
-    return response.text
-
-
-def white_points():
-    response = requests.get(f'http://127.0.0.1:5000/points/white')
-    return response.text
 
 
 class GameBoard:
@@ -197,43 +170,33 @@ class GameBoard:
             self.board[square] = EMPTY
 
 
-game_board = GameBoard()
+class GameHandler:
+    game_board = GameBoard()
 
+    @staticmethod
+    def put_white(square_name):
+        return GameHandler.game_board.put_piece(WHITE, BLACK, square_name)
 
-@flask_app.route('/')
-def test():
-    return 'test'
+    @staticmethod
+    def put_black(square_name):
+        return GameHandler.game_board.put_piece(BLACK, WHITE, square_name)
 
+    @staticmethod
+    def get_board():
+        return GameHandler.game_board.board
 
-@flask_app.route('/put/white/<square_name>')
-def put_white(square_name):
-    return game_board.put_piece(WHITE, BLACK, square_name)
+    @staticmethod
+    def get_possible_movies():
+        return GameHandler.game_board.possible_next_movies
 
+    @staticmethod
+    def get_black_points():
+        return GameHandler.game_board.count_current_result(BLACK)
 
-@flask_app.route('/put/black/<square_name>')
-def put_black(square_name):
-    return game_board.put_piece(BLACK, WHITE, square_name)
-
-
-@flask_app.route('/board')
-def get_board():
-    return json.dumps(game_board.board)
-
-
-@flask_app.route('/possible_movies')
-def get_possible_movies():
-    return json.dumps(game_board.possible_next_movies)
-
-
-@flask_app.route('/points/black')
-def get_black_points():
-    return game_board.count_current_result(BLACK)
-
-
-@flask_app.route('/points/white')
-def get_white_points():
-    return game_board.count_current_result(WHITE)
+    @staticmethod
+    def get_white_points():
+        return GameHandler.game_board.count_current_result(WHITE)
 
 
 if __name__ == '__main__':
-    flask_app.run()
+    pass
