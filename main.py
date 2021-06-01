@@ -2,8 +2,9 @@ import sys
 import board
 import bot
 
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QGridLayout, QPushButton, QComboBox
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QGridLayout, QPushButton, QComboBox, QLineEdit
 from PyQt5.QtGui import QPixmap
+from PyQt5 import QtCore
 from board import GameHandler
 
 
@@ -28,8 +29,8 @@ class FreedomApp(QWidget):
         self.height = 800
         self.help_value = 1
         self.game_mode = PREGAME
-        self.white_bot = bot.RandomBot(board.WHITE)
-        self.black_bot = bot.MinMaxBot(board.BLACK)
+        self.white_bot = bot.MinMaxBot(board.WHITE, depth=1)
+        self.black_bot = bot.MinMaxBot(board.BLACK, depth=2)
         self.check_boxes = []
         self.bots = [QComboBox(self), QComboBox(self)]
         self.layout = QGridLayout()
@@ -37,7 +38,11 @@ class FreedomApp(QWidget):
         self.score_label = QLabel(self)
         self.refresh()
         self.score_label.adjustSize()
-        self.score_label.move(820, 260)
+        self.score_label.move(820, 260+30)
+        self.w_depth_line = QLineEdit(self)
+        self.w_depth_line.move(820, 220+30)
+        self.b_depth_line = QLineEdit(self)
+        self.b_depth_line.move(820+150, 220+30)
         self.pieces_on_board = 0
         self.initUI()
 
@@ -65,6 +70,17 @@ class FreedomApp(QWidget):
         black_bot_combo_list.setText('Black bot')
         black_bot_combo_list.adjustSize()
         black_bot_combo_list.move(820+150, 160)
+
+        depth_w_combo_list = QLabel(self)
+        depth_w_combo_list.setText('Depth:')
+        depth_w_combo_list.adjustSize()
+        depth_w_combo_list.move(820, 200+30)
+
+        depth_b_combo_list = QLabel(self)
+        depth_b_combo_list.setText('Depth:')
+        depth_b_combo_list.adjustSize()
+        depth_b_combo_list.move(820 + 150, 200+30)
+
         for i in range(2):
             self.bots[i].move(820 + i * 150, 180)
             self.bots[i].addItem('random_bot')
@@ -84,6 +100,17 @@ class FreedomApp(QWidget):
 
     def play_button_press_action(self):
         _game_mode = ''
+        # White bot:
+        if self.bots[0].currentText() == 'random_bot':
+            self.white_bot = bot.RandomBot(board.WHITE)
+        elif self.bots[0].currentText() == 'minmax_bot':
+            self.white_bot = bot.MinMaxBot(board.WHITE, int(self.w_depth_line.text()))
+        # White bot:
+        if self.bots[1].currentText() == 'random_bot':
+            self.black_bot = bot.RandomBot(board.BLACK)
+        elif self.bots[1].currentText() == 'minmax_bot':
+            self.black_bot = bot.MinMaxBot(board.BLACK, int(self.b_depth_line.text()))
+
         for mode in self.check_boxes:
             if mode.isChecked():
                 _game_mode = mode.text()
@@ -96,7 +123,6 @@ class FreedomApp(QWidget):
             self.game_mode = PLAYER_VS_WHITE_BOT
             response, bot_square = self.white_bot.make_a_move()
             bot1_pic = QLabel(self)
-            # print(board.game_board.possible_next_movies)
             if response == 'OK':
                 bot1_pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
                 bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
@@ -104,17 +130,14 @@ class FreedomApp(QWidget):
         elif _game_mode == 'BOT_VS_BOT':
             self.game_mode = BOT_VS_BOT
             for i in range(50):
-                print(GameHandler.get_possible_movies())
-                response, bot_square = self.white_bot.make_a_move(GameHandler.game_board)
+                response, bot_square = self.white_bot.make_a_move()
                 bot1_pic = QLabel(self)
-                # print(board.game_board.possible_next_movies)
                 if response == 'OK':
                     bot1_pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
                     bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
                     bot1_pic.show()
-                response, bot_square = self.black_bot.make_a_move(GameHandler.game_board)
+                response, bot_square = self.black_bot.make_a_move()
                 bot2_pic = QLabel(self)
-                # print(board.game_board.possible_next_movies)
                 if response == 'OK':
                     bot2_pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
                     bot2_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
@@ -150,8 +173,7 @@ class FreedomApp(QWidget):
                     pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
                     pic.move(x * 80, y * 80)
                     pic.show()
-                    response, bot_square = self.black_bot.make_a_move('dupa')
-                    # print(board.game_board.possible_next_movies)
+                    response, bot_square = self.black_bot.make_a_move()
                     if response == 'OK':
                         bot1_pic.setPixmap(QPixmap("artifacts/black_pawn.png").scaled(80, 80))
                         bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)
@@ -162,7 +184,6 @@ class FreedomApp(QWidget):
                     pic.move(x * 80, y * 80)
                     pic.show()
                     response, bot_square = self.black_bot.make_a_move()
-                    # print(board.game_board.possible_next_movies)
                     if response == 'OK':
                         bot1_pic.setPixmap(QPixmap("artifacts/white_pawn.png").scaled(80, 80))
                         bot1_pic.move(board.SQUARES_CORD[bot_square][0] * 80, board.SQUARES_CORD[bot_square][1] * 80)

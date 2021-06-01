@@ -34,8 +34,6 @@ class GameBoard:
             for x in range(10):
                 self.board[SQUARES_NAMES[y][x]] = EMPTY
                 self.possible_next_movies.append(SQUARES_NAMES[y][x])
-        # for i in self.board:
-        #     print(i)
 
     def is_it_possible_move(self, color, square):
         # Is it this color turn?
@@ -70,7 +68,6 @@ class GameBoard:
             x_val = int(square_name[1:])
             for x in range(x_val - 1, x_val - 1 + 3):
                 for y in range(y_val - 1, y_val - 1 + 3):
-                    # print(x, y)
                     if x in range(1, 11) and y in range(1, 11):
                         if self.board[SQUARES_NAMES[y - 1][x - 1]] == EMPTY:
                             self.possible_next_movies.append(SQUARES_NAMES[y - 1][x - 1])
@@ -107,7 +104,7 @@ class GameBoard:
                     else:
                         break
                 if in_one_line == 4:
-                    print(square, '->', SQUARES_NAMES[y_iter][x_iter-1])
+                    #print(square, '->', SQUARES_NAMES[y_iter][x_iter-1])
                     points += 1
 
                 # down
@@ -124,7 +121,7 @@ class GameBoard:
                     else:
                         break
                 if in_one_line == 4:
-                    print(square, '->', SQUARES_NAMES[y_iter-1][x_iter])
+                    #print(square, '->', SQUARES_NAMES[y_iter-1][x_iter])
                     points += 1
 
                 # crosswise \
@@ -142,7 +139,7 @@ class GameBoard:
                     else:
                         break
                 if in_one_line == 4:
-                    print(square, '->', SQUARES_NAMES[y_iter-1][x_iter-1])
+                    #print(square, '->', SQUARES_NAMES[y_iter-1][x_iter-1])
                     points += 1
 
                 # crosswise /
@@ -160,7 +157,7 @@ class GameBoard:
                     else:
                         break
                 if in_one_line == 4:
-                    print(square, '->', SQUARES_NAMES[y_iter - 1][x_iter + 1])
+                    #print(square, '->', SQUARES_NAMES[y_iter - 1][x_iter + 1])
                     points += 1
 
         return str(points)
