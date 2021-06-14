@@ -85,6 +85,7 @@ class FreedomApp(QWidget):
             self.bots[i].move(820 + i * 150, 180)
             self.bots[i].addItem('random_bot')
             self.bots[i].addItem('minmax_bot')
+            self.bots[i].addItem('alphabeta_bot')
         for i in range(len(GAME_MODES)):
             self.check_boxes.append(QRadioButton(self))
             self.check_boxes[i].setText(GAME_MODES[i])
@@ -105,11 +106,15 @@ class FreedomApp(QWidget):
             self.white_bot = bot.RandomBot(board.WHITE)
         elif self.bots[0].currentText() == 'minmax_bot':
             self.white_bot = bot.MinMaxBot(board.WHITE, int(self.w_depth_line.text()))
+        elif self.bots[0].currentText() == 'alphabeta_bot':
+            self.white_bot = bot.AlphaBetaBot(board.WHITE, int(self.w_depth_line.text()))
         # White bot:
         if self.bots[1].currentText() == 'random_bot':
             self.black_bot = bot.RandomBot(board.BLACK)
         elif self.bots[1].currentText() == 'minmax_bot':
             self.black_bot = bot.MinMaxBot(board.BLACK, int(self.b_depth_line.text()))
+        elif self.bots[1].currentText() == 'alphabeta_bot':
+            self.black_bot = bot.AlphaBetaBot(board.BLACK, int(self.b_depth_line.text()))
 
         for mode in self.check_boxes:
             if mode.isChecked():
